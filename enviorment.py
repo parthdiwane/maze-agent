@@ -24,7 +24,7 @@ class Enviorment:
             0 represents free moving space 
             2 represents end of maze (always going to be the bottom right point)
         """
-        maze = [[0] * self.maze for _ in range(self.maze_h)]
+        maze = [[0] * self.maze_w for _ in range(self.maze_h)]
         # randomly add borders
         for _ in range(200):
             x = random.randint(0, self.maze_w - 1)
@@ -56,4 +56,59 @@ class Enviorment:
     
     def draw_agent_path(self, screen):
         pygame.draw.rect(screen, self.GREEN, (self.px * self.cell_size, self.py * self.cell_size, self.cell_size,self.cell_size))
+
+    def reset(self):
+        self.px, self.py = 0, 0
+        self.maze = self.create_maze()
+        return self.__get_state()
+
+
+    def step(self, action):
+        """
+            0 = up
+            1 = down 
+            2 = left 
+            3 = right
+        """
+        dx, dy = 0,0
+        if action == 0:
+            dy = 1
+        elif action == 1:
+            dy = -1
+        elif action == 2:
+            dx = -1
+        else:
+            dx = 1
+    
+
+        new_x = self.px + dx
+        new_y = self.py + dy
+
+
+        done = (self.px == self.maze_w - 1 and self.py == self.maze_h - 1)
+        reward = 0
+
+        """
+            hit border -> -0.75
+            done with maze -> 1
+            take open step -> -0.01 (priotize shorter path)
+        """
+
+        if not (0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h) or self.maze[new_y][new_x] == 1:
+            reward = -0.75
+        else:
+            self.px, self.py = new_x, new_y
         
+
+        if done:
+            reward = 1
+        else:
+            reward = -0.01
+
+
+        return self.__get_state(), reward, done, {}
+    
+
+    def _get_state(self):
+        # normalized x and y positions of the agent
+        return np.array([self.px / self.maze_w, self.py / self.maze_h], dtype=np.float32) 
