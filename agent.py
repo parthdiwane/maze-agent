@@ -2,9 +2,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim 
 import torch.nn.functional as F
+
 import numpy as np
+
 from collections import deque
+
 from dqn import DQN
+
 import random
 
 class Agent():
@@ -44,7 +48,7 @@ class Agent():
             target = reward 
             if not done:
                 target = reward + self.gamma * torch.max(self.model(torch.tensor(next_state, dtype=torch.float32))).item()
-            target_f = self.model(torch.tensor(state, dtype=torch.float32)).numpy()
+            target_f = self.model(torch.tensor(state, dtype=torch.float32)).detach().numpy()
             target_f[action] = target
             self.optimizer.zero_grad()
             loss = nn.MSELoss()(torch.tensor(target_f), self.model(torch.tensor(state, dtype=torch.float32)))

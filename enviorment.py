@@ -60,7 +60,7 @@ class Enviorment:
     def reset(self):
         self.px, self.py = 0, 0
         self.maze = self.create_maze()
-        return self.__get_state()
+        return self._get_state()
 
 
     def step(self, action):
@@ -106,7 +106,7 @@ class Enviorment:
             reward = -0.01
 
 
-        return self.__get_state(), reward, done, {}
+        return self._get_state(), reward, done, {}
     
 
     def _get_state(self):

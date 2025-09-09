@@ -40,6 +40,6 @@ class DQN(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
-        x = F.relu1(self.layer2(x))
+        x = F.relu(self.layer2(x))
         return self.layer3(x)
     
