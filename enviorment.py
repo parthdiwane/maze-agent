@@ -54,14 +54,6 @@ class Enviorment:
                     pygame.draw.rect(screen,self.RED,(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
     
 
-
-    def move(self, dx, dy, maze):
-        new_x = dx + self.px
-        new_y = dy + self.py
-
-        if 0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h and maze[new_y][new_x] != 1:
-            self.px = new_x
-            self.py = new_y
     
     def draw_agent_path(self, screen):
         pygame.draw.rect(screen, self.GREEN, (self.px * self.cell_size, self.py * self.cell_size, self.cell_size,self.cell_size))
@@ -92,13 +84,15 @@ class Enviorment:
         new_x = self.px + dx
         new_y = self.py + dy
 
-        if 0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h and self.maze[new_y][new_x] != 1:
-            self.px, self.py = new_x, new_y
-            reward = -0.01
-        else:
+        if not (0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h): # invalid move
             reward = -0.75
+        else: # valid move
+            if self.maze[new_y][new_x] == 1: # hit wall --> no move
+                reward = 0.75
+            else:
+                reward = -0.01
+                self.px, self.py = new_x, new_y
 
-        
         done = (self.px == self.maze_w - 2 and self.py == self.maze_h - 2)
         if done:
             reward = 1
