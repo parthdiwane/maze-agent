@@ -4,9 +4,11 @@ import random
 
 class Enviorment:
     def __init__(self, screen_width, screen_height, cell_size):
-        self.maze_w = screen_width
-        self.maze_h = screen_height
         self.cell_size = cell_size
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.maze_w = screen_width // cell_size
+        self.maze_h = screen_height // cell_size
 
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
@@ -36,12 +38,12 @@ class Enviorment:
 
         for i in range(2, self.maze_h-2, 2):
             for j in range(2, self.maze_w-2, 2):
-                if np.random.random() < 0.3:  # 30% chance of wall
+                if np.random.random() < 0.3:  # 30% chance making a wall
                     self.maze[i, j] = 1
         
-        # end of maze
-        self.maze[1,1] = 0
-        self.maze[self.maze_h-2, self.maze_w-2] = 2 
+        # end of maze and start of maze
+        self.maze[1,1] = 0 # start 
+        self.maze[self.maze_h-2, self.maze_w-2] = 2 # end
     
         return self.maze
     
@@ -86,11 +88,11 @@ class Enviorment:
         # Check if move is within bounds
         if not ((new_x >= 0 and new_x < self.maze_w) and (new_y >= 0 and new_y < self.maze_h)):
             reward = -0.75
-            print(f"Hit boundary at ({new_x}, {new_y})")
+            print(f"hit boundary at ({new_x}, {new_y})")
         else:
             if self.maze[new_y][new_x] == 1: # hit wall
                 reward = -0.75
-                print(f"Hit wall at ({new_x}, {new_y})")
+                print(f"hit wall at ({new_x}, {new_y})")
             else:
                 reward = -0.01
                 self.px, self.py = new_x, new_y
@@ -104,5 +106,5 @@ class Enviorment:
     
 
     def _get_state(self):
-        # normalized x and y positions of the agent
+        # normalized x and y positions of the agent for DQN
         return np.array([self.px / self.maze_w, self.py / self.maze_h], dtype=np.float32) 

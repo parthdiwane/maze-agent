@@ -13,9 +13,9 @@ agent = Agent(action_dim=action_dim,state_dim=state_space,lr=0.001,gamma=0.99,ep
 
 def runSim():
     batch_size = 32
-    n_sims = 10
+    n_sims = 30
 
-    screen = pygame.display.set_mode((env.maze_w, env.maze_h))
+    screen = pygame.display.set_mode((env.screen_width,env.screen_height))
     pygame.display.set_caption("Maze Sim")
 
     for game_num in range(n_sims):
@@ -50,9 +50,9 @@ def runSim():
 
             if env.px == env.maze_w - 1 and env.py == env.maze_h - 1:
                 done = True
-                print(f"Maze completed! Reward: {net_reward}, Steps: {step_cnt}")
+                print(f"Maze completed! Game number: {game_num + 1}, Reward: {net_reward}, Steps: {step_cnt}")
             if step_cnt >= max_step:
-                print(f"Terminated. Reward: {net_reward}")
+                print(f"Terminated. Game number: {game_num + 1}, Reward: {net_reward}")
 
         time.sleep(0.1)
 
