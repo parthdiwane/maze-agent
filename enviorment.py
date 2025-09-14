@@ -7,6 +7,7 @@ class Enviorment:
         self.maze_w = screen_width
         self.maze_h = screen_height
         self.cell_size = cell_size
+
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.GREEN = (0, 255, 0)
@@ -16,25 +17,32 @@ class Enviorment:
         # agent params
         self.px = 0 
         self.py = 0
+
+        self.maze = None
     
     def create_maze(self):
         """
             function returns maze as a matrix
+
             1 represents border 
             0 represents free moving space 
             2 represents end of maze (always going to be the bottom right point)
         """
-        maze = [[0] * self.maze_w for _ in range(self.maze_h)]
-        # randomly add borders
-        for _ in range(200):
-            x = random.randint(0, self.maze_w - 1)
-            y = random.randint(0, self.maze_h - 1)
-            maze[y][x] = 1
-    
-        # end of maze is bottom right corner
-        maze[self.maze_h - 1][self.maze_w - 1] = 2
+        self.maze = np.zeros((self.maze_h, self.maze_w))
+        self.maze[0, :] = 1  # top border
+        self.maze[-1, :] = 1  # bottom border
+        self.maze[:, 0] = 1  # left border
+        self.maze[:, -1] = 1  # right border
 
-        return maze
+        for i in range(2, self.maze_h-2, 2):
+            for j in range(2, self.maze_w-2, 2):
+                if np.random.random() < 0.3:  # 30% chance of wall
+                    self.maze[i, j] = 1
+        
+        # end of maze
+        self.maze[self.maze_h-2, self.maze_w-2] = 2 
+    
+        return self.maze
     
     def draw_maze(self, screen, maze):
         for y in range(self.maze_h):
@@ -58,8 +66,7 @@ class Enviorment:
         pygame.draw.rect(screen, self.GREEN, (self.px * self.cell_size, self.py * self.cell_size, self.cell_size,self.cell_size))
 
     def reset(self):
-        self.px, self.py = 0, 0
-        self.maze = self.create_maze()
+        self.px, self.py = 1, 1
         return self._get_state()
 
 
@@ -84,28 +91,16 @@ class Enviorment:
         new_x = self.px + dx
         new_y = self.py + dy
 
-
-        done = (self.px == self.maze_w - 1 and self.py == self.maze_h - 1)
-        reward = 0
-
-        """
-            hit border -> -0.75
-            done with maze -> 1
-            take open step -> -0.01 (priotize shorter path)
-        """
-
-        if not (0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h) or self.maze[new_y][new_x] == 1:
-            reward = -0.75
-        else:
+        if 0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h and self.maze[new_y][new_x] != 1:
             self.px, self.py = new_x, new_y
-        
+            reward = -0.01
+        else:
+            reward = -0.75
 
+        
+        done = (self.px == self.maze_w - 2 and self.py == self.maze_h - 2)
         if done:
             reward = 1
-        else:
-            reward = -0.01
-
-
         return self._get_state(), reward, done, {}
     
 
