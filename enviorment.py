@@ -70,32 +70,36 @@ class Enviorment:
             2 = left 
             3 = right
         """
-        dx, dy = 0,0
-        if action == 0:
-            dy = 1
-        elif action == 1:
+        dx, dy = 0, 0
+        if action == 0:  # up
             dy = -1
-        elif action == 2:
+        elif action == 1:  # down
+            dy = 1
+        elif action == 2:  # left
             dx = -1
-        else:
+        else:  # right
             dx = 1
-    
 
         new_x = self.px + dx
         new_y = self.py + dy
 
-        if not (0 <= new_x < self.maze_w and 0 <= new_y < self.maze_h): # invalid move
+        # Check if move is within bounds
+        if not ((new_x >= 0 and new_x < self.maze_w) and (new_y >= 0 and new_y < self.maze_h)):
             reward = -0.75
-        else: # valid move
-            if self.maze[new_y][new_x] == 1: # hit wall --> no move
-                reward = 0.75
+            print(f"Hit boundary at ({new_x}, {new_y})")
+        else:
+            if self.maze[new_y][new_x] == 1: # hit wall
+                reward = -0.75
+                print(f"Hit wall at ({new_x}, {new_y})")
             else:
                 reward = -0.01
                 self.px, self.py = new_x, new_y
 
+        # Check if reached goal
         done = (self.px == self.maze_w - 2 and self.py == self.maze_h - 2)
         if done:
-            reward = 1
+            reward = 1.0
+            print(f"reached end")
         return self._get_state(), reward, done, {}
     
 
