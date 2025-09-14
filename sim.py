@@ -23,7 +23,7 @@ def runSim():
         state = env.reset()
         net_reward = 0
         step_cnt = 0
-        max_step = 500 # prevent inf loop
+        max_step = 700 # prevent inf loop
 
         maze = env.create_maze()
         while not done and step_cnt < max_step:
@@ -54,7 +54,7 @@ def runSim():
             if step_cnt >= max_step:
                 print(f"Terminated. Reward: {net_reward}")
 
-        time.sleep(0.5)
+        time.sleep(0.1)
 
     pygame.quit() 
 

@@ -40,6 +40,7 @@ class Enviorment:
                     self.maze[i, j] = 1
         
         # end of maze
+        self.maze[1,1] = 0
         self.maze[self.maze_h-2, self.maze_w-2] = 2 
     
         return self.maze
